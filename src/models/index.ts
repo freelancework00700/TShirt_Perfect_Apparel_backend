@@ -8,6 +8,7 @@ import Size from './size.model';
 import GetInTouch from './get-in-touch.model';
 import ProductInquiry from './product-inquiry.model';
 import BulkOrderDiscuss from './bulk-order-discuss.model';
+import SizeChart from './size-chart.model';
 
 export const initMySQLModels = (connection: Sequelize) => {
     Category.initModel(connection);
@@ -19,6 +20,7 @@ export const initMySQLModels = (connection: Sequelize) => {
     GetInTouch.initModel(connection);
     ProductInquiry.initModel(connection);
     BulkOrderDiscuss.initModel(connection);
+    SizeChart.initModel(connection);
 
     Category.initAssociations();
     SubCategory.initAssociations();
@@ -29,5 +31,5 @@ export const initMySQLModels = (connection: Sequelize) => {
     GetInTouch.initAssociations();
     ProductInquiry.initAssociations();
     BulkOrderDiscuss.initAssociations();
-
+    SizeChart.initAssociations();
 }

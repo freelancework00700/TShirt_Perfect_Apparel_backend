@@ -4,6 +4,7 @@ import Color from './color.model';
 import Size from './size.model';
 import SubCategory from './sub-category.model';
 import Category from './category.model';
+import SizeChart from './size-chart.model';
 
 class Product extends Model {
     static initModel(connection: Sequelize) {
@@ -134,6 +135,7 @@ class Product extends Model {
         Product.hasMany(ProductImages, { foreignKey: 'product_id', as: 'ProductImages', sourceKey: 'id', onDelete: 'CASCADE' });
         Product.belongsTo(SubCategory, { foreignKey: 'subcategory_id', as: 'SubCategory', targetKey: 'id' });
         Product.belongsTo(Category, { foreignKey: 'category_id', as: 'Category', targetKey: 'id' });
+        Product.hasMany(SizeChart, { foreignKey: 'product_id', sourceKey: 'id' });
     
     }
 }

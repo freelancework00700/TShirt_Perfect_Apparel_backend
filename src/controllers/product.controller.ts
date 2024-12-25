@@ -10,6 +10,7 @@ import fs from 'fs';
 import { Op } from 'sequelize';
 import Category from '../models/category.model';
 import sequelize from 'sequelize';
+import SizeChart from "../models/size-chart.model";
 
 export class ProductController extends HttpStatus {
 
@@ -63,7 +64,14 @@ export class ProductController extends HttpStatus {
                 include: [
                     { model: ProductImages, as: 'ProductImages', required: false, where: { isDeleted: false } },
                     { model: Category, as: 'Category' },
-                    { model: SubCategory, as: 'SubCategory' }
+                    { model: SubCategory, as: 'SubCategory' },
+                    { 
+                        model: SizeChart,
+                        where: { isDeleted: false },
+                        include: [
+                            { model: Size }
+                        ]
+                    }
                 ],
                 where,
                 order: [orderBy]
@@ -118,13 +126,29 @@ export class ProductController extends HttpStatus {
 
             // Conver size id string to array
             params.size_ids = params.size_ids.split(',').map(Number);
-
+            
             // Conver color id string to array
             params.color_ids = params.color_ids.split(',').map(Number);
-
+            
             // Create product
             const product: any = await Product.create(params);
 
+            // Convert size chart in array
+            params.size_chart = JSON.parse(params.size_chart);
+
+            // Handle size chart
+            const size_chart = [];
+            for (const element of params.size_chart) {
+                const params = {
+                    ...element,
+                    product_id: product.id
+                }
+                size_chart.push(params);
+            }
+
+            // Create size chart
+            await SizeChart.bulkCreate(size_chart);
+            
             // Handle multiple images
             const productImages = [];
             for (const file of files) {
@@ -208,6 +232,28 @@ export class ProductController extends HttpStatus {
                 params.color_ids = params.color_ids.split(',').map(Number);
             }
 
+            if (params.size_chart != null && params.size_chart != "") {
+
+                // Delete exisitng size chart
+                await SizeChart.update({ isDeleted: true }, { where: { product_id: product.id } });
+                
+                // Convert size chart in array
+                params.size_chart = JSON.parse(params.size_chart);
+
+                // Handle size chart
+                const size_chart = [];
+                for (const element of params.size_chart) {
+                    const sizeChartParams = {
+                        ...element,
+                        product_id: params.id
+                    }
+                    size_chart.push(sizeChartParams);
+                }
+
+                // Create size chart
+                await SizeChart.bulkCreate(size_chart);
+            }
+
             // Update product
             await product.update(params);
 
@@ -238,6 +284,9 @@ export class ProductController extends HttpStatus {
 
             // Image soft delete
             await ProductImages.update({ isDeleted: true }, { where: { product_id: product.id } });
+
+            // Soft delete size chart
+            await SizeChart.update({ isDeleted: true }, { where: { product_id: product.id } });
 
             product.isDeleted = true;
             await product.save();
