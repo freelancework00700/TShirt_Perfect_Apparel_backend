@@ -74,7 +74,10 @@ export class ProductController extends HttpStatus {
                     }
                 ],
                 where,
-                order: [orderBy]
+                order: [
+                    orderBy,
+                    [sequelize.col('ProductImages.fileName'), 'ASC']
+                ]
             });
 
             if (!products.length) {
