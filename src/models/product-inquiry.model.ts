@@ -42,6 +42,18 @@ class ProductInquiry extends Model {
                     type: DataTypes.STRING(20),
                     allowNull: true
                 },
+                city: {
+                    type: DataTypes.STRING(500)
+                },
+                state: {
+                    type: DataTypes.STRING(500)
+                },
+                address: {
+                    type: DataTypes.STRING(500)
+                },
+                pincode: {
+                    type: DataTypes.STRING(500)
+                },
                 isDeleted: {
                     type: DataTypes.BOOLEAN,
                     allowNull: false,
